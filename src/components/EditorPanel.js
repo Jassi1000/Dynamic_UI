@@ -161,7 +161,6 @@ export default function EditorPanel() {
       <select value={state.galleryAlign} onChange={e => set({ galleryAlign: e.target.value })} className="w-full mb-2">
         <option value="grid-left">grid left</option>
         <option value="grid-right">grid right</option>
-        <option value="grid-center">grid center</option>
       </select>
 
       <label className="block text-sm">Spacing ({state.gallerySpacing}px)</label>
