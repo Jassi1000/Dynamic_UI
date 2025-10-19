@@ -1,10 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useUIStore } from '../store/uistore';
 import ColorPickerGrid from './ColorPickerGrid';
 
 export default function EditorPanel() {
   const state = useUIStore();
   const set = (patch) => useUIStore.getState().set(patch);
+
+  // Inject Google Fonts link once
+  useEffect(() => {
+    const href =
+      "https://fonts.googleapis.com/css2?" +
+      [
+        "family=Inter:wght@100;200;300;400;500;600;700;800;900",
+        "family=Roboto:wght@100;300;400;500;700;900",
+        "family=Poppins:wght@100;200;300;400;500;600;700;800;900",
+        "family=Montserrat:wght@100;200;300;400;500;600;700;800;900",
+        "family=Lato:wght@100;300;400;700;900",
+        "family=Nunito:wght@200;300;400;600;700;800",
+        "family=Source+Sans+3:wght@200;300;400;600;700;800",
+        "family=Merriweather:wght@300;400;700",
+        "family=Roboto+Slab:wght@300;400;700",
+      ].join("&") +
+      "&display=swap";
+
+    // Avoid duplicate insertion
+    if (!document.querySelector(`link[href="${href}"]`)) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      document.head.appendChild(link);
+    }
+  }, []);
 
   const exportJSON = () => {
     const cfg = { ...useUIStore.getState() };
@@ -21,9 +47,16 @@ export default function EditorPanel() {
   };
 
   const colorPalette = [
+    // dark & muted tones
     "#5C4033", "#5F6753", "#56695E", "#59665C", "#625760",
-    "#8D6A8A", "#3E4F6B", "#B1534D", "#5C2323", "#2F7767",
-    "#9B7A9E", "#415C74", "#B9504D", "#6B1E1E", "#2B7763"
+    "#3E4F6B", "#5C2323", "#2F7767", "#6B1E1E", "#2B7763",
+
+    // lighter & pastel tones
+    "#E8D5C4", // light beige
+    "#D6E2D0", // soft green-gray
+    "#E2D6E9", // light lavender
+    "#F1D6D2", // soft peach
+    "#D0E4E0"  // minty teal
   ];
 
   return (
@@ -31,16 +64,44 @@ export default function EditorPanel() {
       <h3 className="font-bold mb-3">Editor</h3>
 
       {/* Typography */}
-      <label className="block text-sm">Font Family</label>
-      <select value={state.fontFamily} onChange={e => set({ fontFamily: e.target.value })} 
-      className="w-full mb-2">
-        <option>Inter</option>
-        <option>Roboto</option>
-        <option>Poppins</option>
-        <option>Arial</option>
+      <label className="block text-lg">Font Family</label>
+      <select
+        value={state.fontFamily}
+        onChange={e => set({ fontFamily: e.target.value })}
+        className="w-full mb-2"
+      >
+        {/* value holds a full CSS font-family fallback string */}
+        <option value={`Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial`}>
+          Inter
+        </option>
+        <option value={`Roboto, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial`}>
+          Roboto
+        </option>
+        <option value={`Poppins, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial`}>
+          Poppins
+        </option>
+        <option value={`Montserrat, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial`}>
+          Montserrat
+        </option>
+        <option value={`Lato, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial`}>
+          Lato
+        </option>
+        <option value={`Nunito, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial`}>
+          Nunito
+        </option>
+        <option value={`"Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial`}>
+          Source Sans 3
+        </option>
+        <option value={`Merriweather, Georgia, "Times New Roman", Times, serif`}>
+          Merriweather (serif)
+        </option>
+        <option value={`"Roboto Slab", Georgia, "Times New Roman", Times, serif`}>
+          Roboto Slab (serif)
+        </option>
+        <option value={`Arial, Helvetica, sans-serif`}>Arial (system)</option>
       </select>
 
-      <label className="block text-sm">Font Weight</label>
+      <label className="block text-lg">Font Weight</label>
       <select value={state.fontWeight} onChange={e => set({ fontWeight: Number(e.target.value) })} className="w-full mb-2">
         <option value={400}>400</option>
         <option value={500}>500</option>
@@ -55,7 +116,7 @@ export default function EditorPanel() {
       <hr className="my-3" />
 
       {/* Button Section */}
-      <h4 className="text-sm font-semibold">Button</h4>
+      <h4 className="text-lg font-semibold">Button</h4>
 
       <label className="block text-sm">Border Radius ({state.btnBorderRadius}px)</label>
       <input type="range" min="0" max="40" value={state.btnBorderRadius}
@@ -95,12 +156,12 @@ export default function EditorPanel() {
       <hr className="my-3" />
 
       {/* Gallery Section */}
-      <h4 className="text-sm font-semibold">Gallery</h4>
+      <h4 className="text-lg font-semibold">Gallery</h4>
       <label className="block text-sm">Alignment</label>
       <select value={state.galleryAlign} onChange={e => set({ galleryAlign: e.target.value })} className="w-full mb-2">
         <option value="grid-left">grid left</option>
-        <option value="grid-center">grid center</option>
         <option value="grid-right">grid right</option>
+        <option value="grid-center">grid center</option>
       </select>
 
       <label className="block text-sm">Spacing ({state.gallerySpacing}px)</label>
@@ -114,7 +175,7 @@ export default function EditorPanel() {
       <hr className="my-3" />
 
       {/* Layout Section */}
-      <h4 className="text-sm font-semibold">Layout</h4>
+      <h4 className="text-lg font-semibold">Layout</h4>
       <label className="block text-sm">Card Radius ({state.cardRadius}px)</label>
       <input type="range" min="0" max="40" value={state.cardRadius}
         onChange={e => set({ cardRadius: Number(e.target.value) })} className="w-full mb-2" />
@@ -134,7 +195,7 @@ export default function EditorPanel() {
       <hr className="my-3" />
 
       {/* Stroke Section */}
-      <h4 className="text-sm font-semibold">Stroke / Border</h4>
+      <h4 className="text-lg font-semibold">Stroke / Border</h4>
       <label className="block text-sm">Stroke Color</label>
       <ColorPickerGrid
         colors={colorPalette}
